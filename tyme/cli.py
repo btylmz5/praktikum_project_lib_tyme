@@ -12,12 +12,15 @@ from .session import SessionState
 
 
 def _print_suggestions(suggestions: list[Suggestion], limit: int = 10) -> None:
-    print("\nTop suggestions:")
+    print(f"\nTop {limit} suggestions:")
+    print("=" * 60)
     for i, s in enumerate(suggestions[:limit], start=1):
-        short_why = s.why.strip().replace("\n", " ")
-        if len(short_why) > 90:
-            short_why = short_why[:87] + "..."
-        print(f"{i}) {s.name} — {short_why}")
+        print(f"\nSuggestion {i}: {s.name}")
+        print(f"  Type: {s.feature_type} | Risk: {s.risk}")
+        print("-" * 60)
+        print(f"  Why: {s.why.strip()}")
+        print(f"  How: {s.how.strip()}")
+        print("=" * 60)
 
 
 def run_command(args: argparse.Namespace) -> int:
@@ -127,3 +130,7 @@ def main() -> None:
     args = p.parse_args()
     rc = args.func(args)
     raise SystemExit(rc)
+
+
+if __name__ == "__main__":
+    main()

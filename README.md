@@ -1,0 +1,78 @@
+# Tyme
+
+**Tyme** is a powerful CLI tool that uses Large Language Models (LLMs) via [Ollama](https://ollama.ai/) to analyze your CSV datasets. It profiles your data, generates creative feature engineering suggestions, and allows you to chat interactively about your dataset to refine your machine learning strategy.
+
+## Features
+
+- **📊 Data Profiling**: Automatically scans your CSV to understand distributions, missing values, and data types.
+- **💡 AI-Powered Suggestions**: Uses local LLMs (like Llama 3) to propose 8-12 actionable feature engineering ideas tailored to your specific data.
+- **💬 Interactive Chat**: Discuss the suggestions, ask for implementation details (Pandas/Sklearn code), or helpful explanations directly from the CLI.
+- **🔒 Privacy-First**: All processing happens locally with Ollama; your data never leaves your machine.
+
+## Prerequisites
+
+1. **Python 3.10+** installed.
+2. **Ollama** installed and running.
+   - Install from [ollama.ai](https://ollama.ai).
+   - Pull a model (e.g., `llama3.2`):
+     ```bash
+     ollama pull llama3.2
+     ```
+
+## Installation
+
+Clone the repository and install the package (recommended in a virtual environment):
+
+```bash
+# Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install the package in editable mode
+pip install -e .
+```
+
+## Usage
+
+Run the tool by pointing it to a CSV file. You must have the Ollama server running in the background.
+
+```bash
+python -m tyme.cli run <path_to_csv> [options]
+```
+
+### Examples
+
+**Basic run with default model:**
+```bash
+python -m tyme.cli run data/combined_oulad.csv
+```
+
+**Specify a different model:**
+```bash
+python -m tyme.cli run data/my_data.csv --model mistral
+```
+
+**Target a specific column for prediction:**
+```bash
+python -m tyme.cli run data/house_prices.csv --target Price --task regression
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `files` | Path to the CSV file (required positional argument). | N/A |
+| `--model` | Name of the Ollama model to use. | `llama3.2` |
+| `--target` | Name of the target column you want to predict. | `None` |
+| `--task` | Type of ML task: `classification`, `regression`, or `unspecified`. | `unspecified` |
+| `--limit` | Number of top suggestions to display initially. | `10` |
+| `--save` | Path to save the session history and suggestions as a JSON file. | `None` |
+
+## Workflow
+
+1. **Analyze**: Tyme loads your CSV and creates a statistical profile (without sending the full dataset to the LLM).
+2. **Suggest**: It prompts the LLM with the profile to generate feature engineering ideas.
+3. **Chat**: You enter an interactive session.
+   - Type a suggestion number (e.g., `1`) to get detailed implementation steps.
+   - Ask general questions like *"How do I handle the missing values in column X?"*.
+   - Type `exit` or `quit` to leave.
