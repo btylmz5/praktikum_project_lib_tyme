@@ -3,9 +3,18 @@ import json
 from typing import Any, Optional
 
 
-def build_suggest_prompt(profile: dict[str, Any], task: str, target: Optional[str]) -> str:
+def build_suggest_prompt(
+    profile: dict[str, Any],
+    task: str,
+    target: Optional[str],
+    exclude_columns: Optional[list[str]] = None,
+) -> str:
     target_line = f"Target column: {target}" if target else "Target column: (not provided)"
     task_line = f"Task type: {task} (classification/regression/unspecified)"
+    
+    exclude_text = ""
+    if exclude_columns:
+        exclude_text = f"- Do NOT use the following columns in any suggestions: {', '.join(exclude_columns)}\n"
 
     schema = [
         {
@@ -26,6 +35,7 @@ def build_suggest_prompt(profile: dict[str, Any], task: str, target: Optional[st
         "Your job: propose 8-12 feature engineering ideas that could improve a ML model.\n"
         "Important rules:\n"
         "- Do NOT use target leakage. If a suggestion risks leakage, set risk='leakage' and explain why.\n"
+        f"{exclude_text}"
         "- Suggestions must be generally applicable and based only on columns that exist.\n"
         "- Output MUST be ONLY a valid JSON array. No markdown, no commentary.\n"
         f"- Each element MUST follow this schema keys exactly:\n{json.dumps(schema, indent=2)}\n\n"

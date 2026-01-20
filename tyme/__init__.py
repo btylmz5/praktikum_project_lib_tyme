@@ -1,1 +1,3 @@
-__all__ = []
+from .api import get_suggestions
+
+__all__ = ["get_suggestions"]

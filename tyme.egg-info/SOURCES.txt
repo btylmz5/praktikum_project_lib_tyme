@@ -1,6 +1,7 @@
 README.md
 pyproject.toml
 tyme/__init__.py
+tyme/api.py
 tyme/cli.py
 tyme/csv_loader.py
 tyme/ollama_client.py

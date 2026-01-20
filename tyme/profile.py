@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any
 import numpy as np
 import pandas as pd
+import warnings
 from pandas.api.types import (
     is_bool_dtype,
     is_datetime64_any_dtype,
@@ -23,8 +24,10 @@ def _infer_col_type(s: pd.Series) -> str:
         return "unknown"
 
     # try datetime parse on a small sample
-    sample = s2.sample(min(50, len(s2)), random_state=0)
-    parsed = pd.to_datetime(sample, errors="coerce", utc=False)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        sample = s2.sample(min(50, len(s2)), random_state=0)
+        parsed = pd.to_datetime(sample, errors="coerce", utc=False)
     if parsed.notna().mean() > 0.9:
         return "datetime"
 
