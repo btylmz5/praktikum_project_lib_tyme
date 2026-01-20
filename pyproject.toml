@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tyme"
+version = "0.1.0"
+description = "CSV -> profiling -> LLM feature suggestions -> interactive chat"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pandas>=2.0",
+  "numpy>=1.24",
+  "pydantic>=2.0",
+  "ollama>=0.1.8"
+]
+
+[project.scripts]
+tyme = "tyme.cli:main"
+
+[tool.setuptools]
+packages = ["tyme"]
+

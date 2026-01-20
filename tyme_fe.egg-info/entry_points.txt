@@ -1,0 +1,2 @@
+[console_scripts]
+tyme-fe = tyme_fe.cli:main
