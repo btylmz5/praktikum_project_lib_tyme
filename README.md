@@ -112,6 +112,18 @@ for s in suggestions:
 
 ### API Reference
 
+#### `tyme.get_profile(df)`
+
+Generate a statistical profile of the DataFrame (column types, missing values, stats).
+
+**Arguments:**
+
+- `df` (pd.DataFrame): The input pandas DataFrame.
+
+**Returns:**
+
+- `dict[str, Any]`: A dictionary containing profile metadata used by the LLM.
+
 #### `tyme.get_suggestions(df, model="llama3.2", task="unspecified", target=None, exclude_columns=None)`
 
 Analyze a pandas DataFrame and return a list of feature engineering suggestions.
@@ -132,3 +144,19 @@ Analyze a pandas DataFrame and return a list of feature engineering suggestions.
     - `risk` (str): Potential risk (e.g., "leakage", "none").
     - `why` (str): Explanation of why this feature is useful.
     - `how` (str): Description or pseudocode of how to implement it.
+
+#### `tyme.ask_question(profile, suggestions, history, question, model="llama3.2")`
+
+Ask a follow-up question about the dataset or suggestions.
+
+**Arguments:**
+
+- `profile` (dict): The profile object returned by `get_profile` (or used internally).
+- `suggestions` (list[Suggestion]): The list of suggestions returned by `get_suggestions`.
+- `history` (list[dict]): A list of message dictionaries (e.g., `[{"role": "user", "content": "..."}]`) to maintain context.
+- `question` (str): The user's question.
+- `model` (str): Ollama model name.
+
+**Returns:**
+
+- `str`: The LLM's answer.
