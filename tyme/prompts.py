@@ -16,30 +16,45 @@ def build_suggest_prompt(
     if exclude_columns:
         exclude_text = f"- Do NOT use the following columns in any suggestions: {', '.join(exclude_columns)}\n"
 
+    # Separate columns by type for clearer prompt
+    numeric_cols = [c["name"] for c in profile["columns"] if c["inferred_type"] == "numeric"]
+    categorical_cols = [c["name"] for c in profile["columns"] if c["inferred_type"] == "categorical"]
+    other_cols = [c["name"] for c in profile["columns"] if c["inferred_type"] not in ("numeric", "categorical")]
+
     schema = [
         {
-            "name": "string",
+            "name": "string (e.g., 'Log_FeatureX' or 'Ratio_ColA_ColB')",
             "depends_on": ["colA", "colB"],
-            "how": "string (step-by-step transformation description)",
-            "why": "string (why it may help predictive performance)",
-            "feature_type": "numeric|categorical|datetime|text|unknown",
+            "how": "string (precise step-by-step transformation description)",
+            "why": "string (statistical justification)",
+            "feature_type": "numeric|categorical|datetime|text|interaction",
             "risk": "none|leakage|overfit|data_quality|unknown",
         }
     ]
 
     return (
-        "You are a senior data scientist specialized in feature engineering.\n"
-        "You will be given a dataset profile extracted from a CSV.\n"
+        "You are a Kaggle Grandmaster and Senior Feature Engineer.\n"
+        "Your goal is to win a competition by creating NEW, high-value information from an existing dataset.\n\n"
         f"{task_line}\n"
         f"{target_line}\n\n"
-        "Your job: propose 8-12 feature engineering ideas that could improve a ML model.\n"
-        "Important rules:\n"
-        "- Do NOT use target leakage. If a suggestion risks leakage, set risk='leakage' and explain why.\n"
+        "AVAILABLE COLUMNS (By Type):\n"
+        f"NUMERIC: {', '.join(numeric_cols)}\n"
+        f"CATEGORICAL: {', '.join(categorical_cols)}\n"
+        f"OTHER: {', '.join(other_cols)}\n\n"
+        "GUIDELINES:\n"
+        "1. **Strict Column Usage**: You MUST ONLY use the columns listed above. Do NOT invent columns.\n"
+        "2. **Constraint**: You MUST propose exactly 10 suggestions. Fill the list with simple features if needed to reach 10.\n"
+        "3. **Respect Data Types**: ONLY apply math (Log, Ratio, Diff) to NUMERIC columns. Do NOT divide by Categorical columns.\n"
+        "4. **Focus**: Look for Interactions (Ratio between two numerics) and Aggregations (Group by Categorical, Mean of Numeric).\n"
+        "5. **Why**: Explain the *statistical mechanism*.\n"
+        "6. **Leakage**: If a feature uses future info, set risk='leakage'.\n\n"
+        "TEMPLATE EXAMPLES (Replace placeholders with ACTUAL columns):\n"
+        "- Suggestion: 'Ratio_NumA_NumB'. How: 'NumA / NumB'. Why: 'Captures efficiency'.\n"
+        "- Suggestion: 'Log_NumA'. How: 'log(NumA)'. Why: 'Stabilizes variance'.\n"
         f"{exclude_text}"
-        "- Suggestions must be generally applicable and based only on columns that exist.\n"
-        "- Output MUST be ONLY a valid JSON array. No markdown, no commentary.\n"
-        f"- Each element MUST follow this schema keys exactly:\n{json.dumps(schema, indent=2)}\n\n"
-        "DATASET PROFILE (JSON):\n"
+        "Your Output MUST be a valid JSON array of 10 suggestions obeying this exact schema:\n"
+        f"{json.dumps(schema, indent=2)}\n\n"
+        "FULL DATASET PROFILE (JSON):\n"
         f"{json.dumps(profile, ensure_ascii=False)}\n"
     )
 

@@ -20,14 +20,25 @@ class Suggestion(BaseModel):
 
 def _extract_json_array(text: str) -> str:
     """
-    Tries to pull the first JSON array from the model output.
-    Works when the model wraps output in ```json ... ``` or adds commentary.
+    Robustly extracts the first valid JSON array from text by counting brackets.
     """
-    start = text.find("[")
-    end = text.rfind("]")
-    if start == -1 or end == -1 or end <= start:
-        raise ValueError("Could not find a JSON array in the model output.")
-    return text[start : end + 1]
+    start_idx = text.find("[")
+    if start_idx == -1:
+         raise ValueError("Could not find a JSON array start '[' in the model output.")
+    
+    # Bracket counting to find the matching closing bracket
+    count = 0
+    for i in range(start_idx, len(text)):
+        char = text[i]
+        if char == "[":
+            count += 1
+        elif char == "]":
+            count -= 1
+            if count == 0:
+                # Found the matching closing bracket
+                return text[start_idx : i + 1]
+    
+    raise ValueError("Found start '[' but no matching closing ']' for JSON array.")
 
 
 def parse_suggestions(raw: str) -> list[Suggestion]:

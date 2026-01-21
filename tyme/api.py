@@ -92,7 +92,7 @@ def get_suggestions(
         model=model, 
         prompt=suggest_prompt, 
         temperature=0.3, 
-        num_predict=1100
+        num_predict=2500
     )
 
     # 4. Parse response

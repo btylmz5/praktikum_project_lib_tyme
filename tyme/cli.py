@@ -42,7 +42,7 @@ def run_command(args: argparse.Namespace) -> int:
 
     # 1) Suggest phase
     suggest_prompt = build_suggest_prompt(prof, task=task, target=target, exclude_columns=exclude_cols)
-    raw = generate_text(model=args.model, prompt=suggest_prompt, temperature=0.3, num_predict=1100)
+    raw = generate_text(model=args.model, prompt=suggest_prompt, temperature=0.3, num_predict=2500)
 
     suggestions = parse_suggestions(raw)
     _print_suggestions(suggestions, limit=args.limit)
