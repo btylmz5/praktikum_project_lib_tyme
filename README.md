@@ -1,5 +1,9 @@
 # Tyme
 
+> Local, privacy-first feature engineering assistant: profile a CSV, get LLM feature ideas, then chat about them, all on your own machine.
+
+![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white) ![Ollama](https://img.shields.io/badge/LLM-Ollama-000000) ![Status](https://img.shields.io/badge/status-university%20project-lightgrey)
+
 **Tyme** is a powerful CLI tool that uses Large Language Models (LLMs) via [Ollama](https://ollama.ai/) to analyze your CSV datasets. It profiles your data, generates creative feature engineering suggestions, and allows you to chat interactively about your dataset to refine your machine learning strategy.
 
 ## Features
@@ -38,6 +42,8 @@ pip install -e .
 Run the tool by pointing it to a CSV file. You must have the Ollama server running in the background.
 
 ```bash
+tyme run <path_to_csv> [options]
+# or, without installing the entry point:
 python -m tyme.cli run <path_to_csv> [options]
 ```
 
@@ -79,8 +85,6 @@ python -m tyme.cli run data/house_prices.csv --target Price --task regression
    - Ask general questions like *"How do I handle the missing values in column X?"*.
    - Type `export` to save the suggestions and chat history to a text file in `example/`.
    - Type `exit` or `quit` to leave.
-
-## Library Integration
 
 ## Library Integration
 
@@ -160,3 +164,31 @@ Ask a follow-up question about the dataset or suggestions.
 **Returns:**
 
 - `str`: The LLM's answer.
+
+## Project Structure
+
+```
+tyme/
+├── cli.py            # command-line entry point (tyme run ...)
+├── api.py            # public Python API (get_profile, get_suggestions, ask_question)
+├── csv_loader.py     # CSV loading and type cleanup
+├── profile.py        # statistical profile sent to the LLM instead of raw data
+├── prompts.py        # prompt templates
+├── ollama_client.py  # thin wrapper around the Ollama client
+├── parsing.py        # turns LLM text back into Suggestion objects
+└── session.py        # chat history and export
+tests/                # usage tests against the sample data
+scripts/              # environment and profiling debug helpers
+data/                 # sample datasets
+example/              # sample exported chat session
+```
+
+For a deeper walkthrough of the architecture and each module, see [PROJECT_NOTES.md](PROJECT_NOTES.md).
+
+## Sample Data
+
+`data/combined_oulad.csv` is built from the [Open University Learning Analytics Dataset (OULAD)](https://analyse.kmi.open.ac.uk/open_dataset) (Kuzilek et al., 2017), released under CC BY 4.0.
+
+## Context
+
+Built as a university practical course (Praktikum) project at the Technical University of Munich.
